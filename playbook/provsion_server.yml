@@ -1,0 +1,35 @@
+
+---
+- name: Provision Server
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create User
+      user:
+        name: super_user
+        password: "{{ 'superuser' | password_hash('sha512') }}"
+        groups: sudo
+        shell: /bin/bash
+
+    - name: Install Packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - vim
+        - nginx
+        - nfs-kernel-server
+        - openssh-server
+        # Add more packages as needed
+
+    - name: Configure Firewall
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+      loop:
+        - 80
+        - 443
+        - 22
+        # Add more ports as needed
+
